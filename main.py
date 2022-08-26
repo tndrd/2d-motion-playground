@@ -1,9 +1,10 @@
 #from html import entities
 #from turtle import screensize
+from cmath import sin
 from core  import Playground
 from entities import Ball, Arrow, Allie, Target, Opponent
 import time
-from math import sqrt, isnan
+from math import sqrt, isnan, sin, cos
 import numpy as np
 
 class PotentialAlgorythms:
@@ -17,7 +18,7 @@ class PotentialAlgorythms:
         potential = 0
         
         for p_entity in p_entities:
-            dr = pos - p_entity.get_pos()
+            dr = pos - np.array(p_entity.get_pos())
             dx = dr[0]
             dy = dr[1]
             r  = sqrt(dx**2 + dy**2)
@@ -59,7 +60,7 @@ class PotentialFunctionsPlayground(Playground):
         return self.get_potential_field()
 
     def get_potential_field(self):    
-        p_entities = self._entities["potential"].values()
+        p_entities = self.entities["potential"].values()
         arrows = []
 
         gridsize, _    = self.get_playground_size()
@@ -81,16 +82,46 @@ class PotentialFunctionsPlayground(Playground):
                 arrows.append(arrow)
         return arrows
 
+    def ballstep(self, speed):
+        pos = self.entities["simple"]["ball"][0].get_pos()
+        
+        grad = PotentialAlgorythms.evaluate_field_strength(pos, self.entities["potential"].values())
+
+        r  = sqrt(grad[0]**2 + grad[1]**2)
+        if r < 0.0001:
+            return
+        
+        grad = grad / r
+        if isnan(grad[0]) or isnan(grad[1]):
+            return
+        
+        pos = pos + speed * grad
+        self.entities["simple"]["ball"][0].set_pos(pos)
+
+
+    def play(self):
+        time.sleep(2)
+        t = 0
+        pos = self.entities["potential"]["opponents"][0].get_pos()
+        while self._canvas.active():
+            self.ballstep(0.005)
+            dr = (1.5 * sin(0.01 * t), 0)
+            
+            self.entities["potential"]["opponents"][0].set_pos(pos+dr)
+
+            t+=1
+            time.sleep(0.001)
+
 if __name__ == "__main__":
     aent = {}
     aent["potential"] = {}
     aent["simple"]    = {}
 
-    aent["simple"]["ball"]   = [Ball((8,5))]
+    aent["simple"]["ball"]   = [Ball((8,1))]
     aent["potential"]["target"] = [Target((8,15))]
 
     aent["potential"]["allies"]    = [Allie((8,2))]
-    aent["potential"]["opponents"] = [Opponent((8.5, 10))]
+    aent["potential"]["opponents"] = [Opponent((8.5, 10)), Opponent((4, 10))]
 
     playground = PotentialFunctionsPlayground((16, 16), (1000, 1000), aent)
 
