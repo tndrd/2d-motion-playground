@@ -41,7 +41,7 @@ class Allie(PotentialEntity):
         pygame.draw.ellipse(canvas, self._color, (int(x-h/2), int(y-w/2), w, h))
 
 class Opponent(PotentialEntity):
-    def __init__(self, pos, size=(0.5, 0.5), PU=[PotentialUnit((0,0), -0.1)], color=(255,0,0)):
+    def __init__(self, pos, size=(0.5, 0.5), PU=[PotentialUnit((0,0), -0.5)], color=(255,0,0)):
         super().__init__()
         self._color = color
         self._size  = size
@@ -69,7 +69,7 @@ class Target(PotentialEntity):
         pygame.draw.ellipse(canvas, self._color, (int(x-h/2), int(y-w/2), w, h))
 
 class Arrow(Entity):
-    def __init__(self, start_pos, end_pos, color = (0,0,255)):
+    def __init__(self, start_pos, end_pos, color = (255,0,0)):
         self._start_pos = start_pos
         self._end_pos   = end_pos
         self._color     = color
@@ -78,4 +78,4 @@ class Arrow(Entity):
         p1 = GridDisplayManager.tf_g2d_pos(self._start_pos)
         p2 = GridDisplayManager.tf_g2d_pos(self._end_pos)
         
-        pygame.draw.line(canvas, self._color, p1, p2, 1)
+        pygame.draw.line(canvas, self._color, p1, p2, 3)

@@ -2,6 +2,7 @@ from turtle import screensize
 import pygame
 from threading import Thread
 import time
+import numpy as np
 
 class GridDisplayManager:
     
@@ -57,7 +58,7 @@ class Entity():
         self._pos   = None
 
     def set_pos(self, pos):
-        self._pos  = pos
+        self._pos  = np.array(pos)
     def set_name(self,name):
         self._name = name
 
@@ -131,7 +132,7 @@ class Playground():
     def __init__(self, gridsize, screensize, entities):
         GridDisplayManager.init(gridsize, screensize)
         self._canvas   = Canvas()
-        self._entities = entities 
+        self.entities = entities 
         
         self._draw_thread = Thread(target=self._draw)
         self._play_thread = Thread(target=self.play)
@@ -153,8 +154,8 @@ class Playground():
         time.sleep(1)
         while self._canvas.active():
 
-            p_entities = self._entities["potential"].values()
-            s_entities = self._entities["simple"].values()
+            p_entities = self.entities["potential"].values()
+            s_entities = self.entities["simple"].values()
 
             entities_to_draw = []
 
@@ -170,4 +171,3 @@ class Playground():
             entities_to_draw.extend(additional_drawings)
             
             self._canvas.update(entities_to_draw)
-            break
